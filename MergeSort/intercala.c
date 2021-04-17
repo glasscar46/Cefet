@@ -8,6 +8,7 @@
 
 typedef struct _Endereco Endereco;
  FILE *saida;
+ 
 struct _Endereco
 {
 	char logradouro[72];
@@ -32,12 +33,17 @@ int main(int argc, char** argv)
     saida = fopen("saida.dat","rw");
     long posicao, qtd;
     f = fopen("cep.dat","r");
+    if(f)
+        printf("unable to open file");
+    else
+        printf("file opened");
     fseek(f,0,SEEK_END);
     posicao = ftell(f);
-    long fim = (long)ceil(qtd/16);
-    qtd = ceil(posicao/sizeof(Endereco));
+    qtd = (posicao/sizeof(Endereco));
+    long fim = (qtd/16);
     e = malloc(fim*sizeof(Endereco));
     rewind(f);
+    printf("fim: %ld,qtd: %ld, posicao: %ld",fim,qtd,posicao);
     FILE * saidas[16];
 
 
