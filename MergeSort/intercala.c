@@ -8,7 +8,7 @@
 
 typedef struct _Endereco Endereco;
  FILE *saida;
- 
+
 struct _Endereco
 {
 	char logradouro[72];
@@ -33,14 +33,14 @@ int main(int argc, char** argv)
     saida = fopen("saida.dat","rw");
     long posicao, qtd;
     f = fopen("cep.dat","r");
-    if(f)
+    if(!f)
         printf("unable to open file");
     else
         printf("file opened");
     fseek(f,0,SEEK_END);
     posicao = ftell(f);
     qtd = (posicao/sizeof(Endereco));
-    long fim = (qtd/16);
+    long fim = round((qtd/16));
     e = malloc(fim*sizeof(Endereco));
     rewind(f);
     printf("fim: %ld,qtd: %ld, posicao: %ld",fim,qtd,posicao);
@@ -48,9 +48,10 @@ int main(int argc, char** argv)
 
 
     for(int i = 0; i < 16; i++){
-            char * dat = ".dat";
-            char * right = "cep_" + i ;
+            char dat [4] = ".dat";
+            char * right = "0" + i;
             strcat(right,dat);
+			printf("%s\n",right);
           FILE * aux =   fopen(right,"w");
             fread(e,sizeof(Endereco),fim,f);
             qsort(e,fim,sizeof(Endereco),compara);
@@ -59,15 +60,16 @@ int main(int argc, char** argv)
             fclose(aux);
             aux = NULL;
     }
-    for(int i = 0; i < 16; i++){
-        FILE *aux = saida;
-        char * dat = ".dat";
-        char * right = "cep_" + i ;
+  /*  for(int j = 0; j < 16; j++){
+		char dat [5] = ".dat";
+        char right [10] = "cep";
+		strcat(right,j + "0");
         strcat(right,dat);
-        intercala(aux,right);
-        saida = fopen("saida.dat","rw");
+		FILE * auxilio = fopen(right,"r+");
+        intercala(auxilio,right);
+        saida = fopen("saida.dat","r+");
     }
-    fclose(saida);
+    fclose(saida);*/
 
 }
  void intercala(FILE  *a, char * fileB){
