@@ -39,32 +39,41 @@ int main(int argc, char** argv)
     posicao = ftell(f);
     qtd = (posicao/sizeof(Endereco));
     long fim = round((qtd/16)) + 1;
-    e = malloc(fim*sizeof(Endereco));
     rewind(f);
     printf("fim: %ld,qtd: %ld, posicao: %ld",fim,qtd,posicao);
 
 
     for(int i = 0; i < 16; i++){
-    		char  right[11];
-            sprintf(right,"cep_%d.dat",i);
-          FILE * aux =  fopen(right,"w");
-			if(i != 15)
-            	fread(e,sizeof(Endereco),fim,f);
-			else
-				fread(e,sizeof(Endereco),qtd - (fim*15),f);
-            qsort(e,fim,sizeof(Endereco),compara);
+ 		char  right[11];
+        sprintf(right,"cep_%d.dat",i);
+        FILE * aux =  fopen(right,"w");
+		if(i != 15){
+			e = malloc(fim*sizeof(Endereco));
+            fread(e,sizeof(Endereco),fim,f);
+			qsort(e,fim,sizeof(Endereco),compara);
             fwrite(e,sizeof(Endereco),fim,aux);
 			fclose(aux);
+			free(e);
             aux = NULL;
+		}
+		else{
+			e = malloc((fim-5)*sizeof(Endereco));
+		long a = fread(e,sizeof(Endereco),fim-5,f);
+			qsort(e,fim-5,sizeof(Endereco),compara);
+        	fwrite(e,sizeof(Endereco),fim-5,aux);
+			fclose(aux);
+        	aux = NULL;
+			free(e);
+		}
     }
    for(int j = 0; j < 16; j++){
         char right [11];
         char output[15];
         sprintf(output,"saida_%d.dat",j);
-	sprintf(right,"cep_%d.dat",j);
+		sprintf(right,"cep_%d.dat",j);
         intercala(output,right,j+1);
         remove(output);
-	remove(right);
+		remove(right);
     }
 
 }
