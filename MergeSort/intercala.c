@@ -42,7 +42,6 @@ int main(int argc, char** argv)
     e = malloc(fim*sizeof(Endereco));
     rewind(f);
     printf("fim: %ld,qtd: %ld, posicao: %ld",fim,qtd,posicao);
-    FILE * saidas[16];
 
 
     for(int i = 0; i < 16; i++){
@@ -58,24 +57,27 @@ int main(int argc, char** argv)
 			fclose(aux);
             aux = NULL;
     }
-   
    for(int j = 0; j < 16; j++){
         char right [11];
         char output[15];
         sprintf(output,"saida_%d.dat",j);
 		sprintf(right,"cep_%d.dat",j);
-		FILE * auxilio = saidas[j];
         intercala(output,right,j+1);
-       // remove(output);
-		//remove(right);
+        remove(output);
+		remove(right);
     }
 
 }
  void intercala(char  *fileA, char *fileB, int i){
 	Endereco ea, eb;
 	char saida[15];
+	FILE *a;
 	sprintf(saida,"saida_%d.dat",i);
-	FILE *a = fopen(fileA,"r");
+	if(i == 1){
+		a =fopen("saida_0.dat","w");
+		fclose(a);
+	}
+	a = fopen(fileA,"r+");
 	FILE *b = fopen(fileB,"r");
 	FILE *output = fopen(saida,"w");
 	if(i != 1){
