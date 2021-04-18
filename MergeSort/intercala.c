@@ -7,7 +7,6 @@
 #pragma pack(1)
 
 typedef struct _Endereco Endereco;
- FILE *saida;
 
 struct _Endereco
 {
@@ -24,13 +23,12 @@ int compara(const void *e1, const void *e2)
 {
 	return strncmp(((Endereco*)e1)->cep,((Endereco*)e2)->cep,8);
 }
-void intercala(FILE *a, char *fileB);
+void intercala(char *fileA, char *fileB, int i);
 
 int main(int argc, char** argv)
 {
-    FILE *f,cepA,cepB;
+    FILE *f;
     Endereco *e;
-    saida = fopen("saida.dat","rw");
     long posicao, qtd;
     f = fopen("cep.dat","r");
     if(!f)
@@ -40,7 +38,7 @@ int main(int argc, char** argv)
     fseek(f,0,SEEK_END);
     posicao = ftell(f);
     qtd = (posicao/sizeof(Endereco));
-    long fim = round((qtd/16));
+    long fim = round((qtd/16)) + 1;
     e = malloc(fim*sizeof(Endereco));
     rewind(f);
     printf("fim: %ld,qtd: %ld, posicao: %ld",fim,qtd,posicao);
@@ -48,64 +46,68 @@ int main(int argc, char** argv)
 
 
     for(int i = 0; i < 16; i++){
-            char dat [4] = ".dat";
-            char * right = "0" + i;
-            strcat(right,dat);
-			printf("%s\n",right);
-          FILE * aux =   fopen(right,"w");
+    		char  right[11];
+            sprintf(right,"cep_%d.dat",i);
+          FILE * aux =  fopen(right,"w");
             fread(e,sizeof(Endereco),fim,f);
             qsort(e,fim,sizeof(Endereco),compara);
             fwrite(e,sizeof(Endereco),fim,aux);
             saidas[i] = aux;
-            fclose(aux);
             aux = NULL;
     }
-  /*  for(int j = 0; j < 16; j++){
-		char dat [5] = ".dat";
-        char right [10] = "cep";
-		strcat(right,j + "0");
-        strcat(right,dat);
-		FILE * auxilio = fopen(right,"r+");
-        intercala(auxilio,right);
-        saida = fopen("saida.dat","r+");
-    }
-    fclose(saida);*/
+    fopen("saida_0.dat","w");
+
+   for(int j = 0; j < 16; j++){
+        char right [11];
+        char output[15];
+        sprintf(output,"saida_%d.dat",j);
+		sprintf(right,"cep_%d.dat",j);
+		FILE * auxilio = saidas[j];
+        intercala(output,right,j+1);
+        remove(right);
+        //remove(output);
+    }//fclose(saida);
 
 }
- void intercala(FILE  *a, char * fileB){
-     	FILE *b;
+ void intercala(char  *fileA, char *fileB, int i){
 	Endereco ea, eb;
-	b = fopen(fileB,"r");
-	fread(&ea,sizeof(Endereco),1,a);
+	char saida[15];
+	sprintf(saida,"saida_%d.dat",i);
+	FILE *a = fopen(fileA,"r");
+	FILE *b = fopen(fileB,"r");
+	FILE *output = fopen(saida,"w");
+	if(i != 1){
+		fread(&ea,sizeof(Endereco),1,a);
+	}
 	fread(&eb,sizeof(Endereco),1,b);
 
 	while(!feof(a) && !feof(b))
 	{
 		if(compara(&ea,&eb)<0)
 		{
-			fwrite(&ea,sizeof(Endereco),1,saida);
+			fwrite(&ea,sizeof(Endereco),1,output);
 			fread(&ea,sizeof(Endereco),1,a);
 		}
 		else
 		{
-			fwrite(&eb,sizeof(Endereco),1,saida);
+			fwrite(&eb,sizeof(Endereco),1,output);
 			fread(&eb,sizeof(Endereco),1,b);
 		}
 	}
 
 	while(!feof(a))
 	{
-		fwrite(&ea,sizeof(Endereco),1,saida);
-		fread(&ea,sizeof(Endereco),1,a);		
+		fwrite(&ea,sizeof(Endereco),1,output);
+		fread(&ea,sizeof(Endereco),1,a);
 	}
 	while(!feof(b))
 	{
-		fwrite(&eb,sizeof(Endereco),1,saida);
-		fread(&eb,sizeof(Endereco),1,b);		
+		fwrite(&eb,sizeof(Endereco),1,output);
+		fread(&eb,sizeof(Endereco),1,b);
 	}
 
 	fclose(a);
 	fclose(b);
-	fclose(saida);
+	fclose(output);
 
  }
