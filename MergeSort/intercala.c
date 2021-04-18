@@ -61,10 +61,10 @@ int main(int argc, char** argv)
         char right [11];
         char output[15];
         sprintf(output,"saida_%d.dat",j);
-		sprintf(right,"cep_%d.dat",j);
+	sprintf(right,"cep_%d.dat",j);
         intercala(output,right,j+1);
         remove(output);
-		remove(right);
+	remove(right);
     }
 
 }
@@ -80,9 +80,7 @@ int main(int argc, char** argv)
 	a = fopen(fileA,"r+");
 	FILE *b = fopen(fileB,"r");
 	FILE *output = fopen(saida,"w");
-	if(i != 1){
-		fread(&ea,sizeof(Endereco),1,a);
-	}
+	fread(&ea,sizeof(Endereco),1,a);
 	fread(&eb,sizeof(Endereco),1,b);
 
 	while(!feof(a) && !feof(b))
@@ -115,3 +113,4 @@ int main(int argc, char** argv)
 	fclose(output);
 
  }
+
