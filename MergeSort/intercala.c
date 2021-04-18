@@ -49,14 +49,16 @@ int main(int argc, char** argv)
     		char  right[11];
             sprintf(right,"cep_%d.dat",i);
           FILE * aux =  fopen(right,"w");
-            fread(e,sizeof(Endereco),fim,f);
+			if(i != 15)
+            	fread(e,sizeof(Endereco),fim,f);
+			else
+				fread(e,sizeof(Endereco),qtd - (fim*15),f);
             qsort(e,fim,sizeof(Endereco),compara);
             fwrite(e,sizeof(Endereco),fim,aux);
-            saidas[i] = aux;
+			fclose(aux);
             aux = NULL;
     }
-    fopen("saida_0.dat","w");
-
+   
    for(int j = 0; j < 16; j++){
         char right [11];
         char output[15];
@@ -64,9 +66,9 @@ int main(int argc, char** argv)
 		sprintf(right,"cep_%d.dat",j);
 		FILE * auxilio = saidas[j];
         intercala(output,right,j+1);
-        remove(right);
-        //remove(output);
-    }//fclose(saida);
+       // remove(output);
+		//remove(right);
+    }
 
 }
  void intercala(char  *fileA, char *fileB, int i){
